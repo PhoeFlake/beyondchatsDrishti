@@ -25,5 +25,35 @@ router.get("/scrape", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+router.get("/", async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT id, title, url, created_at FROM articles ORDER BY created_at DESC"
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+router.get("/:id", async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT * FROM articles WHERE id = ?",
+      [req.params.id]
+    );
+    if (!rows.length)
+      return res.status(404).json({ message: "Article not found" });
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+router.delete("/:id", async (req, res) => {
+  try {
+    await pool.query("DELETE FROM articles WHERE id = ?", [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 export default router;

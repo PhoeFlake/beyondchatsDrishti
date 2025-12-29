@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Backend running 😎");
+  res.send("Backend running");
 });
 
 app.get("/test-db", async (req, res) => {

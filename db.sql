@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS articles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255),
+  url VARCHAR(500),
+  content TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE articles 
+ADD UNIQUE KEY unique_url (url);
+
+ALTER TABLE articles 
+ADD published_at DATETIME NULL;

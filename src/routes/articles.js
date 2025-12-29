@@ -6,20 +6,18 @@ const router = express.Router();
 
 router.get("/scrape", async (req, res) => {
   try {
-    const { data } = await axios.get("https://beyondchats.com/blogs/");
-    const $ = cheerio.load(data);
-    const articles = [];
-    $(".elementor-post").each((_, el) => {
-      const title = $(el).find(".elementor-post__title a").text().trim();
-      const url = $(el).find(".elementor-post__title a").attr("href");
-      if (title && url) {
-        articles.push({ title, url });
-      }
-    });
+    const { data } = await axios.get(
+      "https://beyondchats.com/wp-json/wp/v2/posts?per_page=20"
+    );
+    const articles = data.map(p => ({
+      title: p.title.rendered,
+      url: p.link,
+      content: p.excerpt.rendered
+    }));
     for (const article of articles) {
       await pool.query(
-        "INSERT INTO articles (title, url) VALUES (?, ?)",
-        [article.title, article.url]
+        "INSERT IGNORE INTO articles (title, url, content) VALUES (?, ?, ?)",
+        [article.title, article.url, article.content]
       );
     }
     res.json({ success: true, count: articles.length });

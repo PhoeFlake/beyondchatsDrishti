@@ -3,6 +3,7 @@ import axios from "axios";
 import { pool } from "../db.js";
 
 const router = express.Router();
+
 router.get("/scrape", async (req, res) => {
   try {
     let page = 1;

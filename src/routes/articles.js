@@ -6,7 +6,7 @@ import { pool } from "../db.js";
 const router = express.Router();
 router.get("/scrape", async (req, res) => {
   try {
-    const { data } = await axios.get("https://beyondchats.com/blog/");
+    const { data } = await axios.get("https://beyondchats.com/blogs/");
     const $ = cheerio.load(data);
     const articles = [];
     $(".elementor-post").each((_, el) => {

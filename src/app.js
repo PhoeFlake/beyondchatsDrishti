@@ -1,15 +1,14 @@
 import express from "express";
 import cors from "cors";
 import { pool } from "./db.js";
+import articlesRouter from "./routes/articles.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
 app.get("/", (req, res) => {
   res.send("Backend running");
 });
-
 app.get("/test-db", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT NOW() AS time");
@@ -21,3 +20,4 @@ app.get("/test-db", async (req, res) => {
 });
 
 app.listen(5000, () => console.log("Server running on port 5000"));
+app.use("/articles", articlesRouter);

@@ -6,33 +6,23 @@ const router = express.Router();
 
 router.get("/scrape", async (req, res) => {
   try {
-    let page = 1;
-    let totalPages = 1;
-    let totalInserted = 0;
-    do {
-      const response = await axios.get(
-        `https://beyondchats.com/wp-json/wp/v2/posts?per_page=100&page=${page}`
-      );
-      totalPages = parseInt(response.headers["x-wp-totalpages"]);
-      const articles = response.data.map(p => ({
-        title: p.title.rendered,
-        url: p.link,
-        content: p.excerpt.rendered,
-        published_at: p.date
-      }));
-      for (const article of articles) {
-        await pool.query(
-          `INSERT INTO articles (title, url, content, published_at)
-           VALUES (?, ?, ?, ?)
-           ON DUPLICATE KEY UPDATE
-           published_at = VALUES(published_at)`,
-          [article.title, article.url, article.content, article.published_at]
-        );
+    const { data } = await axios.get("https://beyondchats.com/blogs/");
+    const $ = cheerio.load(data);
+    const articles = [];
+    $(".elementor-post").each((_, el) => {
+      const title = $(el).find(".elementor-post__title a").text().trim();
+      const url = $(el).find(".elementor-post__title a").attr("href");
+      if (title && url) {
+        articles.push({ title, url });
       }
-      totalInserted += articles.length;
-      page++;
-    } while (page <= totalPages);
-    res.json({ success: true, totalInserted });
+    });
+    for (const article of articles) {
+      await pool.query(
+        "INSERT INTO articles (title, url) VALUES (?, ?)",
+        [article.title, article.url]
+      );
+    }
+    res.json({ success: true, count: articles.length });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });

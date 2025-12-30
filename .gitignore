@@ -1,0 +1,10 @@
+node_modules/
+**/node_modules/
+.env
+.DS_Store
+*.log
+.vscode/
+dist/
+build/
+phase 2/node_modules/
+phase 1/node_modules/

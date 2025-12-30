@@ -71,5 +71,50 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+router.post("/", async (req, res) => {
+  try {
+    const { title, url, content, published_at } = req.body;
+
+    const [result] = await pool.query(
+      `INSERT INTO articles (title, url, content, published_at)
+       VALUES (?, ?, ?, ?)`,
+      [title, url, content, published_at]
+    );
+
+    res.json({ success: true, id: result.insertId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  try {
+    const { title, content, url, published_at } = req.body;
+
+    await pool.query(
+      `UPDATE articles 
+       SET title=?, content=?, url=?, published_at=? 
+       WHERE id=?`,
+      [title, content, url, published_at, req.params.id]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+router.delete("/:id", async (req, res) => {
+  try {
+    await pool.query(
+      "DELETE FROM articles WHERE id = ?",
+      [req.params.id]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 export default router;

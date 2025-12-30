@@ -41,7 +41,7 @@ router.get("/scrape", async (req, res) => {
 router.get("/oldest", async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT id, title, url, published_at FROM articles ORDER BY published_at ASC LIMIT 5"
+      "SELECT id, title, url, published_at FROM articles WHERE title IS NOT NULL AND url IS NOT NULL AND published_at IS NOT NULL ORDER BY published_at ASC LIMIT 5"
     );
     res.json(rows);
   } catch (err) {
@@ -75,29 +75,43 @@ router.post("/", async (req, res) => {
   try {
     const { title, url, content, published_at } = req.body;
 
+    if (!title || !url || !content) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
     const [result] = await pool.query(
       `INSERT INTO articles (title, url, content, published_at)
        VALUES (?, ?, ?, ?)`,
-      [title, url, content, published_at]
+      [title, url, content, published_at || new Date()]
     );
-
     res.json({ success: true, id: result.insertId });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
+router.put("/by-url", async (req, res) => {
+  try {
+    const { url, title, content, published_at } = req.body;
+    await pool.query(
+      `UPDATE articles
+       SET title=?, content=?, published_at=?
+       WHERE url=?`,
+      [title, content, published_at, url]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 router.put("/:id", async (req, res) => {
   try {
     const { title, content, url, published_at } = req.body;
-
     await pool.query(
       `UPDATE articles 
        SET title=?, content=?, url=?, published_at=? 
        WHERE id=?`,
       [title, content, url, published_at, req.params.id]
     );
-
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -109,12 +123,10 @@ router.delete("/:id", async (req, res) => {
       "DELETE FROM articles WHERE id = ?",
       [req.params.id]
     );
-
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 export default router;

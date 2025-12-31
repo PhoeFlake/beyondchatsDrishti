@@ -19,6 +19,9 @@ app.get("/test-db", async (req, res) => {
     res.status(500).send("DB Error");
   }
 });
-
-app.listen(5000, () => console.log("Server running on port 5000"));
 app.use("/articles", articlesRouter);
+app.listen(5000, () => {
+  console.log("Server running on port 5000")
+  console.log("Cors enabled for all origins");
+});
+

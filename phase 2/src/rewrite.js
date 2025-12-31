@@ -11,9 +11,11 @@ export async function rewriteArticle(original, references) {
   try {
 
     const prompt = `
-Rewrite ONLY the CONTENT of the article.
+Rewrite ONLY the CONTENT of the article from the scrapped articles.
 Do NOT change the title.
-Keep the meaning accurate.
+You may expand explanations and add structure for clarity,
+but do not invent facts or statistics.
+The final article should be AT LEAST as long as the original.
 
 Return JSON ONLY in this format:
 

@@ -1,10 +1,11 @@
 node_modules/
-**/node_modules/
+npm-debug.log*
 .env
-.DS_Store
-*.log
-.vscode/
-dist/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 build/
-phase 2/node_modules/
-phase 1/node_modules/
+dist/
+.DS_Store
+Thumbs.db

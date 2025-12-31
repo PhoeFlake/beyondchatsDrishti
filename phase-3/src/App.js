@@ -55,7 +55,6 @@ function App() {
   const enhancedCount = articles.filter(a => a.rewritten_content && a.rewritten_content.trim().length > 0).length;
   return (
     <div className="app">
-      {/* Simple Header with Logo */}
       <header className="simple-header">
         <div className="logo-container">
           <img 

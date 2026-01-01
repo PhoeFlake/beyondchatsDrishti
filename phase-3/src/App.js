@@ -8,7 +8,7 @@ function App() {
   const [showAll, setShowAll] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
-  const API = process.env.REACT_APP_API || "http://localhost:5000";
+  const API = process.env.REACT_APP_API;
   useEffect(() => {
     fetchArticles();
   }, [showAll]);
